@@ -1,5 +1,4 @@
 #include <modbusRegBank.h>
-#include <stdlib.h>
 
 modbusRegBank::modbusRegBank(void)
 {
@@ -33,8 +32,9 @@ void modbusRegBank::add(word addr)
 			//then make temp the last register in the list.
 			_lastDigReg = temp;
 		}
+		return;
 	}	
-	else
+	else if((addr < 49000) || (addr > 49511))  //Create new Reg if not in EEPROM
 	{
 		modbusAnaReg *temp;
 
@@ -53,6 +53,7 @@ void modbusRegBank::add(word addr)
 			_lastAnaReg->next = temp;
 			_lastAnaReg = temp;
 		}
+		return;
 	}
 }
 
@@ -67,7 +68,7 @@ word modbusRegBank::get(word addr)
 		else
 			return(NULL);	
 	}
-	else
+	else if((addr < 49000) || (addr > 49511))
 	{
 		modbusAnaReg * regPtr;
 		regPtr = (modbusAnaReg *) this->search(addr);
@@ -75,6 +76,10 @@ word modbusRegBank::get(word addr)
 			return(regPtr->value);
 		else
 			return(NULL);	
+	}
+	else //return the EEPROM value
+	{
+		return(EEPROM.read(addr-49000));
 	}
 }
 
@@ -93,7 +98,7 @@ void modbusRegBank::set(word addr, word value)
 			else
 				regPtr->value = 0x00;
 	}
-	else
+	else if ((addr < 49000) || (addr > 49511))
 	{
 		modbusAnaReg * regPtr;
 		//search for the register address
@@ -101,6 +106,11 @@ void modbusRegBank::set(word addr, word value)
 		//if found then assign the register value to the new value.
 		if(regPtr)
 			regPtr->value = value;
+	}
+	else //EEPROM WRITE
+	{
+		//No search needed. Write to EEPROM after masking off the HSB
+		EEPROM.write(addr-49000, (byte)(value & 0x00FF));
 	}
 }
 
