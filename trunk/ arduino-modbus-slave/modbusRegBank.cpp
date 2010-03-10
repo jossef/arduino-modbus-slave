@@ -6,6 +6,8 @@ modbusRegBank::modbusRegBank(void)
 	_lastDigReg		= 0;
 	_anaRegs		= 0;
 	_lastAnaReg		= 0;
+	_eepromStart	= EEPROMSTART;
+	_eepromEnd		= EEPROMSTART + EEPROMLEN - 1;
 }
 
 
@@ -34,7 +36,7 @@ void modbusRegBank::add(word addr)
 		}
 		return;
 	}	
-	else if((addr < 49000) || (addr > 49511))  //Create new Reg if not in EEPROM
+	else if((addr < _eepromStart) || (addr > _eepromEnd))  //Create new Reg if not in EEPROM
 	{
 		modbusAnaReg *temp;
 
@@ -68,7 +70,7 @@ word modbusRegBank::get(word addr)
 		else
 			return(NULL);	
 	}
-	else if((addr < 49000) || (addr > 49511))
+	else if((addr < _eepromStart) || (addr > _eepromEnd))
 	{
 		modbusAnaReg * regPtr;
 		regPtr = (modbusAnaReg *) this->search(addr);
@@ -79,7 +81,7 @@ word modbusRegBank::get(word addr)
 	}
 	else //return the EEPROM value
 	{
-		return(EEPROM.read(addr-49000));
+		return(EEPROM.read(addr - _eepromStart));
 	}
 }
 
@@ -98,7 +100,7 @@ void modbusRegBank::set(word addr, word value)
 			else
 				regPtr->value = 0x00;
 	}
-	else if ((addr < 49000) || (addr > 49511))
+	else if ((addr < _eepromStart) || (addr > _eepromEnd))
 	{
 		modbusAnaReg * regPtr;
 		//search for the register address
@@ -110,7 +112,7 @@ void modbusRegBank::set(word addr, word value)
 	else //EEPROM WRITE
 	{
 		//No search needed. Write to EEPROM after masking off the HSB
-		EEPROM.write(addr-49000, (byte)(value & 0x00FF));
+		EEPROM.write(addr - _eepromStart, (byte)(value & 0x00FF));
 	}
 }
 
