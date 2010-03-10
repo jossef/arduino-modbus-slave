@@ -41,5 +41,8 @@ class modbusRegBank
 							
 		modbusAnaReg	*_anaRegs,
 						*_lastAnaReg;
+
+		word			_eepromStart,
+						_eepromEnd;
 };
 #endif

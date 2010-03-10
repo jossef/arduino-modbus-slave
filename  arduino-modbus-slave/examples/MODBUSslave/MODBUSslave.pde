@@ -3,6 +3,10 @@
 #include <modbusRegBank.h>
 #include <modbusSlave.h>
 
+//required for EEPROM support
+#include <avr/eeprom.h>
+#include "EEPROM.h"
+
 /*
 This example code shows a quick and dirty way to get an
 arduino to talk to a modbus master device with a
