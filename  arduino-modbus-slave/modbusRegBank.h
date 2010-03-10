@@ -3,6 +3,8 @@
 
 #include <modbus.h>
 #include <Wprogram.h>
+#include <avr/eeprom.h>
+#include "EEPROM.h"
 
 
 struct modbusDigReg

@@ -26,10 +26,13 @@ modbus registers follow the following format
 00001-09999  Digital Outputs, A master device can read and write to these registers
 10001-19999  Digital Inputs, A master device can only read the values from these registers
 30001-39999  Analog Inputs, A master device can only read the values from these registers
-40001-49999  Analog Outputs, A master device can read and write to these registers 
+40001-49799  Analog Outputs, A master device can read and write to these registers 
+49800-498511 EEPROM registers, 0-511 respectively
+498512-49999  Analog Outputs, A master device can read and write to these registers 
 
-Analog values are 16 bit unsigned words stored with a range of 0-32767
 Digital values are stored as bytes, a zero value is OFF and any nonzer value is ON
+Analog values are 16 bit words stored with a range of 0-32767
+EEPROM registers contain only one byte worth of data in the low byte of the standard word.
 
 It is best to configure registers of like type into contiguous blocks.  this
 allows for more efficient register lookup and and reduces the number of messages
@@ -161,7 +164,7 @@ void loop()
     regBank.set(10001, (byte) random(0, 2));
     regBank.set(30001, (word) random(0, 32767));
     regBank.set(40001, (word) random(0, 32767));
-    
+   
      slave.run();  
   }
 }
