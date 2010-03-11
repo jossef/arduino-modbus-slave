@@ -13,7 +13,7 @@
 //Define where the EEPROM data starts in the 400000 register bank
 #define EEPROMSTART	47000
 //Define how many bytes of EEPROM are available to the modbus registers
-#define EEPROMLEN	2047
+#define EEPROMLEN	2048
 
 //Each EEPROM byte will be stored in it's own register starting at
 //EEPROMSTARTREG to EEPROMSTARTREG+EEPROMLEN-1
