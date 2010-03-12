@@ -24,7 +24,16 @@ void setup()
 
 //Assign the modbus device ID.  
   regBank.setId(1);
+}
 
+void loop()
+{
+
+	modbusRegister	*do_00001,
+					*di_10001,
+					*ai_30001,
+					*ao_40001,
+					*ee_47000;
 /*
 modbus registers follow the following format
 00001-09999  Digital Outputs, A master device can read and write to these registers
@@ -43,23 +52,9 @@ allows for more efficient register lookup and and reduces the number of messages
 required by the master to retrieve the data
 */
 
-//Add Digital Output registers 00001-00016 to the register bank
-  regBank.add(1);
+//Add Digital Output registers 00001-00002 to the register bank
+  do_00001 = regBank.add(1);  //assign a register pointer to the register upon creation;
   regBank.add(2);
-  regBank.add(3);
-  regBank.add(4);
-  regBank.add(5);
-  regBank.add(6);
-  regBank.add(7);
-  regBank.add(8);
-  regBank.add(9);
-  regBank.add(10);
-  regBank.add(11);
-  regBank.add(12);
-  regBank.add(13);
-  regBank.add(14);
-  regBank.add(15);
-  regBank.add(16);
 
 //Add Digital Input registers 10001-10008 to the register bank
   regBank.add(10001);  
@@ -83,27 +78,18 @@ required by the master to retrieve the data
   regBank.add(30009);  
   regBank.add(30010);  
 
-//Add Analog Output registers 40001-40020 to the register bank
-  regBank.add(40001);  
-  regBank.add(40002);  
+//Add Analog Output registers 40001-40004 to the register bank
+  ao_40001 = regBank.add(40001);  
+  regBank.add(40002);  //get register pointer upon creation
   regBank.add(40003);  
   regBank.add(40004);  
-  regBank.add(40005);  
-  regBank.add(40006);  
-  regBank.add(40007);  
-  regBank.add(40008);  
-  regBank.add(40009);  
-  regBank.add(40010);  
-  regBank.add(40011);  
-  regBank.add(40012);  
-  regBank.add(40013);  
-  regBank.add(40014);  
-  regBank.add(40015);  
-  regBank.add(40016);  
-  regBank.add(40017);  
-  regBank.add(40018);  
-  regBank.add(40019);  
-  regBank.add(40020);  
+
+//Add EEPROM registers 47000-47004 to the register bank (EEPROM 0-5)
+  regBank.add(47000);  
+  regBank.add(47001);  
+  regBank.add(47002);  
+  regBank.add(47003);  
+  regBank.add(47004);  
 
 /*
 Assign the modbus device object to the protocol handler
@@ -115,60 +101,31 @@ only have one device assigned to it.
 
 // Initialize the serial port for coms at 9600 baud  
   slave.setBaud(9600);   
-}
-
-void loop()
-{
-//put some data into the registers
-  regBank.set(1, 1);  
-  regBank.set(2, 1);  
-  regBank.set(3, 0);  
-  regBank.set(4, 1);  
-  regBank.set(5, 1);  
-  regBank.set(6, 0);  
-  regBank.set(7, 1);  
-  regBank.set(8, 0);  
-
-  regBank.set(10001, 1);
-  regBank.set(10002, 1);  
-  regBank.set(10003, 1);  
-  regBank.set(10004, 1);  
-  regBank.set(10005, 0);  
-  regBank.set(10006, 0);  
-  regBank.set(10007, 0);  
-  regBank.set(10008, 0);  
-
-
-  regBank.set(30001,1);
-  regBank.set(30002,2);
-  regBank.set(30003,3);
-  regBank.set(30004,4);
-  regBank.set(30005,5);
-  regBank.set(30006,6);
-  regBank.set(30007,7);
-  regBank.set(30008,8);
-  regBank.set(30009,9);
-  regBank.set(30010,10);
-
-  regBank.set(40001,1);
-  regBank.set(40002,2);
-  regBank.set(40003,2);
-  regBank.set(40004,4);
-  regBank.set(40005,5);
-  regBank.set(40006,6);
-  regBank.set(40007,7);
-  regBank.set(40008,8);
-  regBank.set(40009,9);
-  regBank.set(40010,10);
   
- while(1)
-  {
-    //put a random number into registers 1, 10001, 30001 and 40001
-    regBank.set(1, (byte) random(0, 2));
-    regBank.set(10001, (byte) random(0, 2));
-    regBank.set(30001, (word) random(0, 32767));
-    regBank.set(40001, (word) random(0, 32767));
-   
+//get a few other register pointers after the fact
+
+	ai_30001 = regBank.getRegister(30001);  
+	ao_40001 = regBank.getRegister(40001);
+	ee_47000 = regBank.getRegister(47000);
+	
+while (1)
+{
+/*There are 2 ways to read and write to the data.
+One is through the modbusDevice class
+assign some random number to 30001*/
+    regBank.set(10001, (word) random(0, 2));
+
+/* The second is to go directly through a modbusRegister pointer
+assign some random number to 40001*/
+
+	ai_30001->set((word) random(0,1200));
+
+//Reading is done much the same way.
+// set register 40001 to the value of 40002 * the value of register 30001
+	ao_40001->set(regBank.get(40002) * ai_30001->get()); 
+  
+//Run the MODBUS slave RTU handler.
      slave.run();  
+
   }
 }

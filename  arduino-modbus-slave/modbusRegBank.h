@@ -2,27 +2,30 @@
 #define _MODBUSREGBANK
 
 #include <modbus.h>
-#include <Wprogram.h>
-#include <avr/eeprom.h>
-#include "EEPROM.h"
 
+#include <modbusRegister.h>
 
-struct modbusDigReg
+class modbusRegBank
 {
-	word address;
-	byte value;
+	public:
 
-	modbusDigReg *next;
+		modbusRegBank(void);
+		
+		modbusRegister* add(word);
+		word get(word);
+		void set(word, word);
+		modbusRegister* getRegister(word);
+				
+	private:
+		modbusRegister * search(word);
+		
+		modbusRegister *_registers;
+
+		word			_eepromStart,
+						_eepromEnd;
 };
 
-struct modbusAnaReg
-{
-	word address;
-	word value;
-
-	modbusAnaReg *next;
-};
-
+/*
 class modbusRegBank
 {
 	public:
@@ -45,4 +48,5 @@ class modbusRegBank
 		word			_eepromStart,
 						_eepromEnd;
 };
+*/
 #endif
