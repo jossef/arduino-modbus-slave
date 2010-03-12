@@ -11,9 +11,10 @@
 //the total silence time needed to signify an EOM or SOM in RTU mode
 
 //Define where the EEPROM data starts in the 400000 register bank
-#define EEPROMSTART	47000
+#define EEPROM_START	47000
 //Define how many bytes of EEPROM are available to the modbus registers
-#define EEPROMLEN	2048
+#define EEPROM_LEN	2048
+#define EEPROM_END	EEPROM_START + EEPROM_LEN - 1
 
 //Each EEPROM byte will be stored in it's own register starting at
 //EEPROMSTARTREG to EEPROMSTARTREG+EEPROMLEN-1
